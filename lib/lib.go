@@ -4,35 +4,19 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"io"
 )
 
-func GenerateRandomString(length int) (string, error) {
-	// Determine the number of random bytes needed
-	numBytes := (length * 6) / 8
-
-	// Create a buffer to hold random bytes
-	buf := make([]byte, numBytes)
-
-	// Read random bytes from crypto/rand
-	_, err := rand.Read(buf)
-	if err != nil {
-		return "", err
-	}
-
-	// Encode the random bytes to base64 to get a string
-	randomString := base64.URLEncoding.EncodeToString(buf)
-
-	// Trim the string to the desired length
-	randomString = randomString[:length]
-
-	return randomString, nil
+func GenerateRandomString() string {
+	bytes := make([]byte, 32) //generate a random 32 byte key for AES-256
+	rand.Read(bytes)
+	key := hex.EncodeToString(bytes)
+	return key
 }
 
-func encrypt(stringToEncrypt string, keyString string) (encryptedString string) {
+func Encrypt(stringToEncrypt string, keyString string) (encryptedString string) {
 
 	//Since the key is in string, we need to convert decode it to bytes
 	key, _ := hex.DecodeString(keyString)
@@ -63,7 +47,7 @@ func encrypt(stringToEncrypt string, keyString string) (encryptedString string) 
 	return fmt.Sprintf("%x", ciphertext)
 }
 
-func decrypt(encryptedString string, keyString string) (decryptedString string) {
+func Decrypt(encryptedString string, keyString string) (decryptedString string) {
 
 	key, _ := hex.DecodeString(keyString)
 	enc, _ := hex.DecodeString(encryptedString)

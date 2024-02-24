@@ -16,6 +16,12 @@ func main() {
 		Value(&APIKEY)
 
 	Textinput.Run()
-	fmt.Println(lib.GenerateRandomString(28))
+	// fmt.Println(APIKEY)
+	randomString := lib.GenerateRandomString()
+	fmt.Println(randomString)
+	encryptedKey := lib.Encrypt(APIKEY, randomString)
+	fmt.Println(encryptedKey)
+	decryptedKey := lib.Decrypt(encryptedKey, randomString)
+	fmt.Println(decryptedKey)
 
 }
