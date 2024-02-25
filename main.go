@@ -2,26 +2,36 @@ package main
 
 import (
 	"fmt"
-	"gotf/lib"
+	"log"
 
 	"github.com/charmbracelet/huh"
+	"github.com/joho/godotenv"
 )
 
+func setup() {
+	var apiKey string
+
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Enter your API-KEY").
+				Prompt("🔑:").
+				Value(&apiKey),
+		))
+	form.Run()
+
+	processedString := fmt.Sprintf("APIKEY=%s", apiKey)
+	env, _ := godotenv.Unmarshal(processedString)
+	err := godotenv.Write(env, "./.env")
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func main() {
-	var APIKEY string
-
-	Textinput := huh.NewInput().
-		Title("Enter your openAI API Key").
-		Prompt("Key: ").
-		Value(&APIKEY)
-
-	Textinput.Run()
-	// fmt.Println(APIKEY)
-	randomString := lib.GenerateRandomString()
-	fmt.Println(randomString)
-	encryptedKey := lib.Encrypt(APIKEY, randomString)
-	fmt.Println(encryptedKey)
-	decryptedKey := lib.Decrypt(encryptedKey, randomString)
-	fmt.Println(decryptedKey)
-
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("No config found! Lets set this up!")
+		setup()
+	}
 }
